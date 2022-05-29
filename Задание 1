@@ -1,0 +1,42 @@
+with last_address as                                                         -- формируем выборку последней прописки граждан на текущий момент
+     (select max(id) as id
+        from x#user_on_adress
+       where sysdate between c_begin and nvl(c_end, sysdate)
+       group by c_user) 
+    select REPLACE(u.c_fio, ',') as fio,                                         -- выводим ФИО гражданина без запятых 
+           SUBSTR(a.c_address, 1, INSTR(a.c_address, ',', 1, 3) - 1) as address, -- определяем длину адреса без индекса и выводим её
+           SUBSTR(a.c_address, -6, 6) as indexes                                 -- выводим последние 6 символов адреса где хранится индекс
+      from x#user u
+      join x#user_on_adress uoa
+        on u.id = uoa.c_user
+      join x#address a
+        on a.id = uoa.c_address
+      join last_address la
+        on la.id = uoa.id
+     where p_mode = 1                                                           -- выполняем данный запрос только если параметр p_mode равен 1
+    
+    UNION ALL
+    select REPLACE(u.c_fio, ',') as fio,
+           SUBSTR(a.c_address, 1, INSTR(a.c_address, ',', 1, 3) - 1) as address,
+           SUBSTR(a.c_address, -6, 6) as indexes
+      from x#user u
+      left join x#user_on_adress uoa
+             on u.id = uoa.c_user
+       and uoa.id = (select max(t.id) from x#user_on_adress t                   -- берём данные по адресам только для действующих прописок
+                     where t.c_user = u.id and c_end is null) 
+      left join x#address a
+        on a.id = uoa.c_address
+     where p_mode = 0                                                           -- выполняем данный запрос только если параметр p_mode равен 0 
+    
+    UNION ALL
+    select REPLACE(u.c_fio, ',') as fio, 
+           null as address,                                                     -- ничего не выводим вместо адреса и индекса, так как граждане не имеют действующей прописки
+           null as indexes
+      from x#user u
+      left join x#user_on_adress uoa
+        on u.id = uoa.c_user
+     where p_mode = -1                                                          -- выполняем данный запрос только если параметр p_mode равен -1
+       and not exists (select 1                                                 -- не учитываем в запросе граждан с не закрытой пропиской
+        from x#user_on_adress
+       where c_end is null
+         and c_user = u.id);
