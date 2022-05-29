@@ -1,0 +1,11 @@
+with input as
+ (select 'Аналитик:1#Разработчик:12#Тестировщик:10#Менеджер:3' input --Набор данных для анализа
+    from dual) 
+select 
+regexp_substr(str, '[^:]+', 1, 1) key,                               --Выделение ключа от начала строки до знака ":"
+TO_NUMBER(regexp_substr(str, '\d+')) value                           --Определение значения 
+from
+(select regexp_substr(input, '[^#]+', 1, level) str                  --Разбитие данных на строки разделённые знаком "#"
+from input
+CONNECT BY instr(input, '#', 1, level - 1) > 0) t
+order by value desc;                                                 --Сортировка значений по убыванию
