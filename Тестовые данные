@@ -1,0 +1,206 @@
+--Создание таблиц
+-- Create table                                                       
+create table x#user (
+   id     number        generated  always as identity,
+   c_fio  varchar2(100) not null);
+-- Add comments to the table
+comment on table x#user
+  is 'Таблица граждан';
+comment on column x#user.id
+  is 'Идентификатор гражданина';
+comment on column x#user.c_fio
+  is 'ФИО гражданина';
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table x#user
+  add constraint PK_USER primary key (id);
+-- Create table
+create table x#address (
+   id        number         generated  always as identity,
+   c_address varchar2(4000) not null);
+-- Add comments to the table
+comment on table x#address
+  is 'Таблица адресов';
+comment on column x#address.id
+  is 'Идентификатор адреса прописки';
+comment on column x#address.c_address
+  is 'Адрес';
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table x#address
+  add constraint PK_ADDRESS primary key (id);
+-- Create table
+create table x#user_on_adress (
+   id        number generated  always as identity,
+   c_user    number not null,
+   c_address number not null,
+   c_begin   date   not null,
+   c_end     date);
+-- Add comments to the table
+comment on table x#user_on_adress
+  is 'Таблица прописок';
+comment on column x#user_on_adress.id
+  is 'Идентификатор прописки';
+comment on column x#user_on_adress.c_user
+  is 'Идентификатор гражданина';
+  comment on column x#user_on_adress.c_address
+  is 'Идентификатор адреса прописки';
+  comment on column x#user_on_adress.c_begin
+  is 'Дата прописки';
+  comment on column x#user_on_adress.c_end
+  is 'Дата выписки';
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table x#user_on_adress
+  add constraint PK_USER_ON_ADRESS primary key (id);
+alter table x#user_on_adress
+  add constraint FK_USER_ON_ADRESS_USER_ID foreign key (c_user)
+  references x#USER (id);
+alter table x#user_on_adress
+  add constraint FK_USER_ON_ADRESS_ADDRESS_ID foreign key (c_address)
+  references x#ADDRESS (id);
+
+--Создание тестовых данных
+---------------Добавление данных в таблицу граждан-----------------------
+insert into x#user
+  (c_fio)
+values
+  ('Иванов, Иван, Иванович');
+insert into x#user
+  (c_fio)
+values
+  ('Сидоров, Пётр, Иванович');
+insert into x#user
+  (c_fio)
+values
+  ('Чехов, Павел, Михайлович');
+insert into x#user
+  (c_fio)
+values
+  ('Соколова, Наталья, Степановна');
+insert into x#user
+  (c_fio)
+values
+  ('Рубцов, Виктор, Иванович');
+insert into x#user
+  (c_fio)
+values
+  ('Петров, Иван, Николаевич');
+insert into x#user
+  (c_fio)
+values
+  ('Гилев, Дмитрий, Павлович');
+insert into x#user
+  (c_fio)
+values
+  ('Ипатов, Михаил, Васильевич');
+insert into x#user
+  (c_fio)
+values
+  ('Сергеева, Ольга, Максимовна');
+insert into x#user
+  (c_fio)
+values
+  ('Брежнев, Игорь, Алексеевич');
+---------------Добавление данных в таблицу адресов-----------------------
+insert into x#address
+  (c_address)
+values
+  ('г. Сызрань, ул. Ильича-15, кв.12, 675485');
+insert into x#address
+  (c_address)
+values
+  ('г. Москва, ул. Свободы-10, кв.30, 123444');
+insert into x#address
+  (c_address)
+values
+  ('г. Кунгур, ул. Бочкарева-170, кв.15, 617475');
+insert into x#address
+  (c_address)
+values
+  ('г. Самара, ул. Восточная-40, кв.10, 332445');
+insert into x#address
+  (c_address)
+values
+  ('г. Саратов, ул. Пролетарская-55, кв.44, 685478');
+insert into x#address
+  (c_address)
+values
+  ('г. Пермь, ул. Майская-1, кв.1, 458796');
+insert into x#address
+  (c_address)
+values
+  ('г. Рязань, ул. Ленина-5, кв.33, 236458');
+insert into x#address
+  (c_address)
+values
+  ('г. Тагил, ул. Парковая-3, кв.18, 568238');
+insert into x#address
+  (c_address)
+values
+  ('г. Пермь, ул. Строителей-26, кв.44, 614097');
+insert into x#address
+  (c_address)
+values
+  ('г. Воткинск, ул. Ким-86, кв.10, 423741');
+---------------Добавление данных в таблицу прописок-----------------------
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (1,
+   1,
+   to_date('18.10.2013', 'dd.mm.yyyy'),
+   to_date('18.10.2014', 'dd.mm.yyyy'));
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (1,
+   5,
+   to_date('01.11.2014', 'dd.mm.yyyy'),
+   to_date('05.06.2016', 'dd.mm.yyyy'));
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (1, 7, to_date('06.06.2016', 'dd.mm.yyyy'), null);
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (2, 3, to_date('06.06.2011', 'dd.mm.yyyy'), null);
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (2, 2, to_date('06.06.2013', 'dd.mm.yyyy'), null);
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (2,
+   6,
+   to_date('25.01.2015', 'dd.mm.yyyy'),
+   to_date('09.09.2016', 'dd.mm.yyyy'));
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (3,
+   8,
+   to_date('01.04.2010', 'dd.mm.yyyy'),
+   to_date('01.12.2020', 'dd.mm.yyyy'));
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (4, 4, to_date('01.08.2005', 'dd.mm.yyyy'), null);
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (5,
+   3,
+   to_date('01.03.2006', 'dd.mm.yyyy'),
+   to_date('05.06.2011', 'dd.mm.yyyy'));
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (5, 4, to_date('01.03.2006', 'dd.mm.yyyy'), null);
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (10, 10, to_date('21.02.2001', 'dd.mm.yyyy'), null);
+insert into x#user_on_adress
+  (c_user, c_address, c_begin, c_end)
+values
+  (6, 9, to_date('15.06.2021', 'dd.mm.yyyy'), null);
