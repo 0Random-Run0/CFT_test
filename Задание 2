@@ -1,0 +1,6 @@
+with alfabet as
+ (select 'a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z' alfabet --Набор данных для анализа
+    from dual)
+select regexp_substr(alfabet, '[^,]+', 1, level) list                  --Разбитие данных на строки разделённые знаком ","
+  from alfabet
+CONNECT BY instr(alfabet, ',', 1, level - 1) > 0;
